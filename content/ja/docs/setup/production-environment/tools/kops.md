@@ -36,42 +36,42 @@ kopsは、自動プロビジョニングシステムです。
 
 #### インストール
 
-Download kops from the [releases page](https://github.com/kubernetes/kops/releases) (it is also easy to build from source):
+kopsを[リリースページ](https://github.com/kubernetes/kops/releases)からダウンロードする（ソースをビルドするのも簡単です）
 
 {{< tabs name="kops_installation" >}}
 {{% tab name="macOS" %}}
 
-Download the latest release with the command:
+コマンドを実行して最新のリリースをダウンロード
 
 ```shell
 curl -LO https://github.com/kubernetes/kops/releases/download/$(curl -s https://api.github.com/repos/kubernetes/kops/releases/latest | grep tag_name | cut -d '"' -f 4)/kops-darwin-amd64
 ```
 
-To download a specific version, replace the following portion of the command with the specific kops version.
+特定のバージョンをダウンロードする場合、 コマンドの以下の部分を特定のkopsバージョンに置き換えてください。
 
 ```shell
 $(curl -s https://api.github.com/repos/kubernetes/kops/releases/latest | grep tag_name | cut -d '"' -f 4)
 ```
 
-For example, to download kops version v1.20.0 type:
+v1.20.0をダウンロードする場合
 
 ```shell
 curl -LO https://github.com/kubernetes/kops/releases/download/v1.20.0/kops-darwin-amd64
 ```
 
-Make the kops binary executable.
+実行できるようにバイナリの権限を変更する。
 
 ```shell
 chmod +x kops-darwin-amd64
 ```
 
-Move the kops binary in to your PATH.
+バイナリをPATHが通っているディレクトリに移動する。
 
 ```shell
 sudo mv kops-darwin-amd64 /usr/local/bin/kops
 ```
 
-You can also install kops using [Homebrew](https://brew.sh/).
+[Homebrew](https://brew.sh/)を使ってインストールすることも可能です。
 
 ```shell
 brew update && brew install kops
@@ -79,37 +79,37 @@ brew update && brew install kops
 {{% /tab %}}
 {{% tab name="Linux" %}}
 
-Download the latest release with the command:
+コマンドを実行して最新のリリースをダウンロード
 
 ```shell
 curl -LO https://github.com/kubernetes/kops/releases/download/$(curl -s https://api.github.com/repos/kubernetes/kops/releases/latest | grep tag_name | cut -d '"' -f 4)/kops-linux-amd64
 ```
 
-To download a specific version of kops, replace the following portion of the command with the specific kops version.
+特定のバージョンをダウンロードする場合、 コマンドの以下の部分を特定のkopsバージョンに置き換えてください。
 
 ```shell
 $(curl -s https://api.github.com/repos/kubernetes/kops/releases/latest | grep tag_name | cut -d '"' -f 4)
 ```
 
-For example, to download kops version v1.20.0 type:
+v1.20.0をダウンロードする場合
 
 ```shell
 curl -LO https://github.com/kubernetes/kops/releases/download/v1.20.0/kops-linux-amd64
 ```
 
-Make the kops binary executable
+実行できるようにバイナリの権限を変更する。
 
 ```shell
 chmod +x kops-linux-amd64
 ```
 
-Move the kops binary in to your PATH.
+バイナリをPATHが通っているディレクトリに移動する。
 
 ```shell
 sudo mv kops-linux-amd64 /usr/local/bin/kops
 ```
 
-You can also install kops using [Homebrew](https://docs.brew.sh/Homebrew-on-Linux).
+[Homebrew](https://docs.brew.sh/Homebrew-on-Linux)を使ってインストールすることも可能です。
 
 ```shell
 brew update && brew install kops
@@ -121,20 +121,13 @@ brew update && brew install kops
 
 ### (2/5) クラスター用のroute53ドメインの作成
 
-kops uses DNS for discovery, both inside the cluster and outside, so that you can reach the kubernetes API server
-from clients.
+kopsはクラスター内部と外部の検出にDNSを使用するため、クライアントからKubernetes APIサーバーに到達することができます。
 
-kops has a strong opinion on the cluster name: it should be a valid DNS name.  By doing so you will
-no longer get your clusters confused, you can share clusters with your colleagues unambiguously,
-and you can reach them without relying on remembering an IP address.
+kopsは、クラスターの名前についてはっきりとしたルールがあり、有効なDNS名でなければなりません。そうすることで複数のクラスターを混同することがなくなるため、同僚とクラスターを明確に共有することができ、IPアドレスを覚えることなくクラスターにアクセスすることができます。
 
-You can, and probably should, use subdomains to divide your clusters.  As our example we will use
-`useast1.dev.example.com`.  The API server endpoint will then be `api.useast1.dev.example.com`.
+複数のクラスターを分割するためにサブドメインを使用することができ、おそらく使用すべきです。この例では、`useast1.dev.example.com`を使用します。APIサーバーのエンドポイントは、`api.useast1.dev.example.com`となります。
 
-A Route53 hosted zone can serve subdomains.  Your hosted zone could be `useast1.dev.example.com`,
-but also `dev.example.com` or even `example.com`.  kops works with any of these, so typically
-you choose for organization reasons (e.g. you are allowed to create records under `dev.example.com`,
-but not under `example.com`).
+Route53のホステッドゾーンは、サブドメインを提供します。あなたのホステッドゾーンは`useast1.dev.example.com`だけでなく、`dev.example.com`や`example.com`でも動作します。kopsは、これらのいずれでも動作するため、通常は組織上の理由で選択することになります（例えば、`dev.example.com`配下にレコードを作成することは許可されているが、`example.com`配下に作成することは許可されていない）。
 
 Let's assume you're using `dev.example.com` as your hosted zone.  You create that hosted zone using
 the [normal process](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/CreatingNewSubdomain.html), or
