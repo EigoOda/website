@@ -129,20 +129,15 @@ kopsは、クラスターの名前についてはっきりとしたルールが�
 
 Route53のホステッドゾーンは、サブドメインを提供します。あなたのホステッドゾーンは`useast1.dev.example.com`だけでなく、`dev.example.com`や`example.com`でも動作します。kopsは、これらのいずれでも動作するため、通常は組織上の理由で選択することになります（例えば、`dev.example.com`配下にレコードを作成することは許可されているが、`example.com`配下に作成することは許可されていない）。
 
-Let's assume you're using `dev.example.com` as your hosted zone.  You create that hosted zone using
-the [normal process](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/CreatingNewSubdomain.html), or
-with a command such as `aws route53 create-hosted-zone --name dev.example.com --caller-reference 1`.
+あなたが`dev.example.com`をホステッドゾーンを使用していると仮定します。[通常のプロセス]((https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/CreatingNewSubdomain.html))または、`aws route53 create-hosted-zone --name dev.example.com --caller-reference 1`のようなコマンドでホステッドゾーンを作成できます。
 
-You must then set up your NS records in the parent domain, so that records in the domain will resolve.  Here,
-you would create NS records in `example.com` for `dev`.  If it is a root domain name you would configure the NS
-records at your domain registrar (e.g. `example.com` would need to be configured where you bought `example.com`).
+NSレコードを親ドメインで設定し、ドメイン内のレコードが解決できるようする必要があります。ここでは、`example.com`に`dev`のNSレコードを作成します。もしルートドメイン名であれば、ドメインレジストラーにNSレコードを設定することになります（例えば`example.com` は、`example.com`を購入した場所で設定する必要があります）。
 
-This step is easy to mess up (it is the #1 cause of problems!)  You can double-check that
-your cluster is configured correctly if you have the dig tool by running:
+このステップは、混乱しやすいです（問題の一番の原因です！）。digツールを実行することで、クラスターが正しく設定されていることをダブルチェックすることができます。
 
 `dig NS dev.example.com`
 
-You should see the 4 NS records that Route53 assigned your hosted zone.
+Route53がホステッドゾーンにアサインした4つのNSレコードが確認できます。
 
 ### (3/5) クラスターの状態を保存するS3バケットの作成
 
