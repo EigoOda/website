@@ -129,44 +129,31 @@ kopsは、クラスターの名前についてはっきりとしたルールが�
 
 Route53のホステッドゾーンは、サブドメインを提供します。あなたのホステッドゾーンは`useast1.dev.example.com`だけでなく、`dev.example.com`や`example.com`でも動作します。kopsは、これらのいずれでも動作するため、通常は組織上の理由で選択することになります（例えば、`dev.example.com`配下にレコードを作成することは許可されているが、`example.com`配下に作成することは許可されていない）。
 
-Let's assume you're using `dev.example.com` as your hosted zone.  You create that hosted zone using
-the [normal process](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/CreatingNewSubdomain.html), or
-with a command such as `aws route53 create-hosted-zone --name dev.example.com --caller-reference 1`.
+あなたが`dev.example.com`をホステッドゾーンを使用していると仮定します。[通常のプロセス]((https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/CreatingNewSubdomain.html))または、`aws route53 create-hosted-zone --name dev.example.com --caller-reference 1`のようなコマンドでホステッドゾーンを作成できます。
 
-You must then set up your NS records in the parent domain, so that records in the domain will resolve.  Here,
-you would create NS records in `example.com` for `dev`.  If it is a root domain name you would configure the NS
-records at your domain registrar (e.g. `example.com` would need to be configured where you bought `example.com`).
+NSレコードを親ドメインで設定し、ドメイン内のレコードが解決できるようする必要があります。ここでは、`example.com`に`dev`のNSレコードを作成します。もしルートドメイン名であれば、ドメインレジストラーにNSレコードを設定することになります（例えば`example.com` は、`example.com`を購入した場所で設定する必要があります）。
 
-This step is easy to mess up (it is the #1 cause of problems!)  You can double-check that
-your cluster is configured correctly if you have the dig tool by running:
+このステップは、混乱しやすいです（問題の一番の原因です！）。digツールを実行することで、クラスターが正しく設定されていることをダブルチェックすることができます。
 
 `dig NS dev.example.com`
 
-You should see the 4 NS records that Route53 assigned your hosted zone.
+Route53がホステッドゾーンにアサインした4つのNSレコードが確認できます。
 
 ### (3/5) クラスターの状態を保存するS3バケットの作成
 
-kops lets you manage your clusters even after installation.  To do this, it must keep track of the clusters
-that you have created, along with their configuration, the keys they are using etc.  This information is stored
-in an S3 bucket.  S3 permissions are used to control access to the bucket.
+kopsでは、インストール後もクラスターを管理できます。そのためには、作成したクラスターと共にそれらの構成や使用しているキーなどの経過を追う必要があります。これらの情報は、S3バケットに保存されます。S3の権限は、バケットへのアクセスを制御するために使用されます。
 
-Multiple clusters can use the same S3 bucket, and you can share an S3 bucket between your colleagues that
-administer the same clusters - this is much easier than passing around kubecfg files.  But anyone with access
-to the S3 bucket will have administrative access to all your clusters, so you don't want to share it beyond
-the operations team.
+複数のクラスターが同じS3バケットを使用でき、同じクラスターを管理する同僚とS3バケットを共有できます。これは、kubecfgファイルを渡すよりも簡単です。ただし、S3バケットにアクセスできる人は誰でもすべてのクラスターの管理者アクセス権を持つことになるため、運用チーム以外には共有しないほうがよいでしょう。
 
-So typically you have one S3 bucket for each ops team (and often the name will correspond
-to the name of the hosted zone above!)
+そのため、通常は各運用チームごとに1つのS3バケットを持つことになります（そして、多くの場合、その名前は上記のホストゾーンと一致するでしょう！）
 
-In our example, we chose `dev.example.com` as our hosted zone, so let's pick `clusters.dev.example.com` as
-the S3 bucket name.
+私達の例では、`dev.example.com`をホストゾーンとするため、S3バケット名は`clusters.dev.example.com`としましょう。
 
-* Export `AWS_PROFILE` (if you need to select a profile for the AWS CLI to work)
+* `AWS_PROFILE`をエクスポートします（AWS CLIを使う場合は、プロファイルを選択する必要があります）
 
-* Create the S3 bucket using `aws s3 mb s3://clusters.dev.example.com`
+* `aws s3 mb s3://clusters.dev.example.com`を実行し、S3バケットを作成します
 
-* You can `export KOPS_STATE_STORE=s3://clusters.dev.example.com` and then kops will use this location by default.
-   We suggest putting this in your bash profile or similar.
+* `export KOPS_STATE_STORE=s3://clusters.dev.example.com`を実行してエクスポートすることで、kopsはデフォルトでこの場所を使用します。これをbashプロファイルなどに追加することをお勧めします。
 
 
 ### (4/5) クラスター設定の構築
